@@ -1,6 +1,6 @@
 {
   "name": "rtk-agnt-integration",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Run shell commands through RTK to save 60-90% tokens before LLM ingestion.",
   "author": "AGNT Community",
   "icon": "terminal",
@@ -11,11 +11,11 @@
       "type": "rtk-runner",
       "entryPoint": "./rtk-runner.js",
       "schema": {
-        "title": "Shell Command Runner",
+        "title": "RTK Runner",
         "category": "action",
         "type": "rtk-runner",
         "icon": "terminal",
-        "description": "Execute any shell command through RTK. Automatically tracks token savings in the background.",
+        "description": "Execute shell commands through RTK with automatic token savings tracking.",
         "parameters": {
           "command": {
             "type": "string",
@@ -62,16 +62,16 @@
       "type": "rtk-stats",
       "entryPoint": "./rtk-stats.js",
       "schema": {
-        "title": "Savings Statistics",
+        "title": "RTK Stats",
         "category": "utility",
         "type": "rtk-stats",
-        "icon": "table",
-        "description": "View your token savings statistics and command history over time.",
+        "icon": "chart-bar",
+        "description": "View token savings statistics and command history.",
         "parameters": {
           "period": {
             "type": "string",
             "inputType": "select",
-            "description": "Time period to summarize",
+            "description": "Time period",
             "default": "all",
             "options": [
               { "value": "all", "label": "All time" },
@@ -96,11 +96,11 @@
       "type": "rtk-dashboard",
       "entryPoint": "./rtk-dashboard.js",
       "schema": {
-        "title": "Savings Dashboard",
+        "title": "RTK Dashboard",
         "category": "widget",
         "type": "rtk-dashboard",
-        "icon": "tachometer-alt",
-        "description": "Visual dashboard with charts showing your token savings over time. Auto-detects AGNT theme.",
+        "icon": "chart-line",
+        "description": "Visual dashboard with charts showing token savings. Auto-detects AGNT theme.",
         "parameters": {},
         "outputs": {
           "html": { "type": "string" }
