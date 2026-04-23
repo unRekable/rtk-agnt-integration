@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 /**
  * Install RTK plugin into local AGNT instance
  * Usage: node bin/install-to-agnt.js
@@ -10,12 +9,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PLUGIN_NAME = 'rtk-agnt-integration';
 const AGNT_PLUGINS_DIR = path.join(
-  process.env.HOME || process.env.USERPROFILE,
+  process.env.HOME || process.env.USERPROFILE || '/tmp',
   '.agnt',
   'data',
   'plugins'
@@ -50,8 +47,10 @@ function copyPluginFiles() {
   for (const file of files) {
     const src = path.join(pluginSrc, file);
     const dest = path.join(pluginDest, file);
-    fs.copyFileSync(src, dest);
-    console.log(`Copied ${file} → ${dest}`);
+    if (fs.statSync(src).isFile()) {
+      fs.copyFileSync(src, dest);
+      console.log(`Copied ${file} → ${dest}`);
+    }
   }
 
   return pluginDest;
