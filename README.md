@@ -56,20 +56,6 @@ sequenceDiagram
 
 ---
 
-## What This Plugin Does
-
-Runs shell commands through [RTK](https://github.com/rtk-ai/rtk) to compress output by **60-90%** before LLM ingestion.
-
-**Supported RTK commands:** `git status`, `git log`, `git diff`, `cargo test`, `cargo build`, `docker ps`, `docker logs`, `kubectl get pods`, `ls`, `pytest`, `npm test`, `go test`
-
-| Command | Raw Tokens | RTK Output | Savings |
-|---------|-----------|------------|---------|
-| `git status` | ~3,000 | ~600 | **-80%** |
-| `cargo test` | ~25,000 | ~2,500 | **-90%** |
-| `docker ps` | ~900 | ~180 | **-80%** |
-
----
-
 ## Prerequisites
 
 RTK must be installed before using this plugin.
@@ -90,9 +76,71 @@ Verify: `rtk --version`
 
 ---
 
+## Import the Workflow
+
+Create a workflow by importing this JSON:
+
+```json
+{
+  "name": "RTK Token Optimizer",
+  "description": "Execute shell commands via RTK with token savings tracking",
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "type": "trigger",
+      "config": { "triggerType": "manual" }
+    },
+    {
+      "id": "runner-1",
+      "type": "rtk-runner",
+      "config": {
+        "command": "git status",
+        "ultraCompact": false,
+        "rawFallback": true
+      }
+    },
+    {
+      "id": "stats-1",
+      "type": "rtk-stats",
+      "config": { "period": "all" }
+    },
+    {
+      "id": "dashboard-1",
+      "type": "rtk-dashboard",
+      "config": {}
+    }
+  ],
+  "edges": [
+    { "source": "trigger-1", "target": "runner-1" },
+    { "source": "runner-1", "target": "stats-1" },
+    { "source": "stats-1", "target": "dashboard-1" }
+  ]
+}
+```
+
+1. Go to **Workflows**
+2. Click **Import**
+3. Paste the JSON above
+4. Click **Import**
+5. Click **Run**
+
+---
+
+## What This Plugin Does
+
+Runs shell commands through [RTK](https://github.com/rtk-ai/rtk) to compress output by **60-90%** before LLM ingestion.
+
+| Command | Raw Tokens | RTK Output | Savings |
+|---------|-----------|------------|---------|
+| `git status` | ~3,000 | ~600 | **-80%** |
+| `cargo test` | ~25,000 | ~2,500 | **-90%** |
+| `docker ps` | ~900 | ~180 | **-80%** |
+
+---
+
 ## Tools
 
-### RTK Runner (`rtk-runner`)
+### RTK Runner
 
 Executes shell commands via RTK with automatic token savings tracking.
 
@@ -107,7 +155,7 @@ Executes shell commands via RTK with automatic token savings tracking.
 
 **Returns:** `success`, `stdout`, `stderr`, `exitCode`, `tokensSaved`, `percentSaved`, `totalTokensSaved`, `totalRuns`
 
-### RTK Stats (`rtk-stats`)
+### RTK Stats
 
 Retrieves token savings statistics.
 
@@ -119,13 +167,13 @@ Retrieves token savings statistics.
 
 **Returns:** `success`, `totalRuns`, `rtkRuns`, `fallbackRuns`, `totalTokensSaved`, `commands`, `history`
 
-### RTK Dashboard (`rtk-dashboard`)
+### RTK Dashboard
 
 Renders a visual HTML widget with token savings charts.
 
 **Parameters:** None
 
-**Returns:** `html` (self-contained widget with stat cards, adoption ring, sparkline, bar chart)
+**Returns:** `html` (self-contained widget)
 
 ---
 
