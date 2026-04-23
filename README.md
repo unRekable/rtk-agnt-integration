@@ -1,10 +1,79 @@
 # RTK-AGNT Integration
 
-[![CI](https://github.com/your-username/rtk-agnt-integration/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/rtk-agnt-integration/actions)
-[![codecov](https://codecov.io/gh/your-username/rtk-agnt-integration/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/rtk-agnt-integration)
+[![CI](https://github.com/unRekable/rtk-agnt-integration/actions/workflows/ci.yml/badge.svg)](https://github.com/unRekable/rtk-agnt-integration/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![AGNT Plugin](https://img.shields.io/badge/AGNT-Plugin-e53d8f)](https://github.com/agnt-gg/agnt)
 
-> AGNT plugin and Node.js wrapper for [RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk). Compress shell command output by **60-90%** before it reaches your LLM context.
+> AGNT plugin for [RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) with **token savings tracking**, **stats dashboard**, and **theme-aware widget**. Compress shell output by **60-90%** before it reaches your LLM context.
+
+---
+
+## Architecture
+
+```mermaid
+graph TD
+    subgraph AGNT["AGNT Operating System"]
+        A[Agent / Workflow]
+    end
+
+    subgraph Plugin["RTK-AGNT Plugin v3"]
+        B[rtk-runner]
+        C[rtk-stats]
+        D[rtk-dashboard]
+        F[Token Tracker]
+    end
+
+    subgraph Persistence["Local Storage"]
+        G[(stats.json)]
+    end
+
+    subgraph External["External"]
+        E[RTK CLI]
+        H[Shell Commands]
+    end
+
+    A -->|execute| B
+    A -->|query| C
+    A -->|render| D
+    B -->|invoke| E
+    E -->|compress| H
+    B -->|record| F
+    F -->|persist| G
+    C -->|read| G
+    D -->|read| G
+    D -->|generate| I[HTML Widget]
+
+    style AGNT fill:#16213e,stroke:#e53d8f,stroke-width:2px,color:#fff
+    style Plugin fill:#1a1a2e,stroke:#12e0ff,stroke-width:2px,color:#fff
+    style Persistence fill:#0f3460,stroke:#19ef83,stroke-width:2px,color:#fff
+    style External fill:#2a2a4e,stroke:#ffd700,stroke-width:2px,color:#fff
+```
+
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant User as User/Agent
+    participant Runner as rtk-runner
+    participant RTK as RTK CLI
+    participant Tracker as Token Tracker
+    participant Stats as stats.json
+    participant Dash as rtk-dashboard
+
+    User->>Runner: execute({ command: "git status" })
+    Runner->>RTK: rtk git status
+    RTK-->>Runner: compressed output
+    Runner->>Tracker: recordRun()
+    Tracker->>Stats: persist tokensSaved
+    Stats-->>Tracker: updated stats
+    Tracker-->>Runner: { savings, stats }
+    Runner-->>User: { stdout, tokensSaved, totalTokensSaved }
+
+    User->>Dash: execute()
+    Dash->>Stats: loadStats()
+    Stats-->>Dash: all-time data
+    Dash-->>User: HTML widget with charts
+```
 
 ---
 
@@ -12,7 +81,7 @@
 
 This project bridges [RTK](https://github.com/rtk-ai/rtk) — a high-performance CLI proxy written in Rust — with [AGNT](https://github.com/agnt-gg/agnt), the local-first AI agent operating system.
 
-Instead of dumping raw `git status`, `cargo test`, or `docker ps` output into your LLM prompt (burning thousands of tokens), this tool pipes everything through RTK first. You get the same information, just condensed and optimized.
+Instead of dumping raw `git status`, `cargo test`, or `docker ps` output into your LLM prompt (burning thousands of tokens), this plugin pipes everything through RTK first. You get the same information, just condensed and optimized.
 
 ### Token Savings
 
@@ -42,7 +111,7 @@ Instead of dumping raw `git status`, `cargo test`, or `docker ps` output into yo
 
 ### Option A: Install from GitHub Releases
 
-1. Download the latest `.agnt` file from [Releases](https://github.com/your-username/rtk-agnt-integration/releases).
+1. Download the latest `.agnt` file from [Releases](https://github.com/unRekable/rtk-agnt-integration/releases).
 2. In AGNT: **Marketplace → Install from file** → select the `.agnt` file.
 3. Done. The plugin hot-reloads automatically.
 
@@ -50,44 +119,42 @@ Instead of dumping raw `git status`, `cargo test`, or `docker ps` output into yo
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/rtk-agnt-integration.git
+git clone https://github.com/unRekable/rtk-agnt-integration.git
 cd rtk-agnt-integration
 
 # Install dependencies & run tests
 npm install
 npm test
 
-# Install plugin into AGNT
+# Build and install plugin into AGNT
+npm run build:plugin
 npm run install:agnt
-```
-
-### Option C: Manual Copy
-
-```bash
-# Copy plugin directory into AGNT plugins folder
-cp -r plugin/ ~/.agnt/data/plugins/rtk-agnt-integration
 ```
 
 ---
 
-## Usage
+## Tools
 
-Once installed, the `rtk-runner` tool is available to your AGNT agents and workflows.
+This plugin provides **3 tools** for AGNT:
 
-### Parameters
+### 1. RTK Runner (`rtk-runner`)
+
+Executes shell commands through RTK with automatic token savings tracking.
+
+**Parameters:**
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `command` | `string` | ✅ | — | Shell command to execute (e.g. `git status`) |
-| `workingDirectory` | `string` | ❌ | `process.cwd()` | Directory to run the command in |
-| `ultraCompact` | `boolean` | ❌ | `false` | Pass `-u` to RTK for maximum compression |
-| `rawFallback` | `boolean` | ❌ | `true` | If RTK is missing, run raw command instead |
+| `command` | `string` | ✅ | — | Shell command (e.g. `git status`, `cargo test`) |
+| `workingDirectory` | `string` | ❌ | `process.cwd()` | Directory to run in |
+| `ultraCompact` | `boolean` | ❌ | `false` | Maximum compression (`-u` flag) |
+| `rawFallback` | `boolean` | ❌ | `true` | Fall back to raw if RTK missing |
 
-### Example: Agent Chat
-
+**Example:**
 ```json
 {
-  "command": "git status"
+  "command": "git status",
+  "ultraCompact": false
 }
 ```
 
@@ -98,64 +165,73 @@ Once installed, the `rtk-runner` tool is available to your AGNT agents and workf
   "rtkInstalled": true,
   "exitCode": 0,
   "stdout": "M  src/file.js\n?? new.txt",
-  "stderr": "",
-  "commandExecuted": "rtk git status",
+  "tokensSaved": 1800,
+  "percentSaved": 75,
+  "totalTokensSaved": 45200,
+  "totalRuns": 42,
   "note": "Output filtered via RTK for token optimization"
 }
 ```
 
-### Example: With Working Directory
+---
 
+### 2. RTK Stats (`rtk-stats`)
+
+Retrieve token savings statistics and command history.
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | `select` | `all` | Filter: `all`, `today`, `week`, `month` |
+
+**Response:**
 ```json
 {
-  "command": "cargo test",
-  "workingDirectory": "/home/user/my-rust-project",
-  "ultraCompact": true
+  "success": true,
+  "totalRuns": 42,
+  "rtkRuns": 40,
+  "fallbackRuns": 2,
+  "totalTokensSaved": 45200,
+  "commands": {
+    "git": { "count": 15, "tokensSaved": 18000 },
+    "cargo": { "count": 8, "tokensSaved": 22000 }
+  },
+  "history": [ ... ]
 }
 ```
 
-### Example: In a Workflow
+---
 
-Use the `rtk-runner` node in the AGNT visual workflow designer. Connect it after a trigger (e.g., file change webhook) and before an LLM prompt node.
+### 3. RTK Dashboard (`rtk-dashboard`)
+
+Interactive token savings dashboard with charts and visualizations. **Theme-aware** — automatically adapts to AGNT's dark/light mode.
+
+**Returns:** Self-contained HTML widget with:
+- Live stat cards (total runs, tokens saved, RTK runs, fallbacks)
+- RTK adoption rate ring chart
+- Token savings trend sparkline
+- Top commands bar chart
+
+The dashboard uses AGNT CSS variables (`--color-bg`, `--color-accent`, etc.) for automatic theme adaptation.
 
 ---
 
-## Supported Commands
+## Token Tracking
 
-Any command RTK supports works through this wrapper:
-
-- **Git:** `git status`, `git log`, `git diff`, `git add`, `git commit`
-- **Rust:** `cargo test`, `cargo build`, `cargo clippy`
-- **Containers:** `docker ps`, `docker logs`, `docker inspect`
-- **Kubernetes:** `kubectl get pods`, `kubectl logs`
-- **Python:** `pytest`, `ruff check`
-- **Go:** `go test`
-- **Node:** `npm test`, `jest`
-- **System:** `ls`, `tree`, `cat`, `grep`, `rg`, `read`
-- **Cloud:** `aws s3 ls`, `gh pr list`
-
-See the [RTK documentation](https://www.rtk-ai.app/guide) for the full list.
-
----
-
-## Architecture
+Every run is automatically recorded to a local JSON file:
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  AGNT Agent │────▶│  rtk-runner  │────▶│   RTK CLI   │
-│  or Workflow│     │  (this tool) │     │  (Rust bin) │
-└─────────────┘     └──────────────┘     └─────────────┘
-                              │
-                              ▼
-                       ┌──────────────┐
-                       │ Shell Output │
-                       │  (compressed)│
-                       └──────────────┘
+~/.rtk-agnt-stats/stats.json
 ```
 
-### Fallback Behavior
+Tracked metrics:
+- Total runs, RTK runs, fallback runs
+- Tokens saved per run and cumulative
+- Per-command breakdown
+- Last 100 runs history
 
-If RTK is not installed (exit code `127`), the tool automatically falls back to raw command execution — your workflows never break, they just use more tokens until you install RTK.
+This data persists across AGNT restarts and is used by both `rtk-stats` and `rtk-dashboard`.
 
 ---
 
@@ -163,16 +239,19 @@ If RTK is not installed (exit code `127`), the tool automatically falls back to 
 
 ```bash
 # Clone
-git clone https://github.com/your-username/rtk-agnt-integration.git
+git clone https://github.com/unRekable/rtk-agnt-integration.git
 cd rtk-agnt-integration
 
-# Install dependencies
+# Install
 npm install
 
-# Run tests in watch mode
+# Run tests (ESM with Jest)
+npm test
+
+# Watch mode
 npm run test:watch
 
-# Run linter
+# Lint
 npm run lint
 
 # Build plugin package
@@ -184,19 +263,37 @@ npm run build:plugin
 ```
 rtk-agnt-integration/
 ├── .github/workflows/       # CI/CD pipelines
-├── __tests__/               # Jest test suite
+├── __tests__/               # Jest test suite (ESM)
+│   ├── index.test.js        # Core library tests
+│   ├── rtk-stats.test.js    # Stats tool tests
+│   └── rtk-dashboard.test.js # Dashboard tests
 ├── bin/                     # CLI helpers
 │   ├── build-plugin.js      # Build .agnt package
 │   └── install-to-agnt.js   # Install to local AGNT
 ├── plugin/                  # AGNT plugin files
-│   ├── manifest.json        # Plugin metadata
-│   └── rtk-runner.js        # Plugin entry point
+│   ├── manifest.json        # Plugin metadata (3 tools)
+│   ├── rtk-runner.js        # Runner tool
+│   ├── rtk-stats.js         # Stats tool
+│   └── rtk-dashboard.js     # Dashboard widget tool
 ├── src/                     # Core library
-│   └── rtk-runner.js        # Reusable runner class
-├── jest.config.js           # Test configuration
-├── package.json             # Node.js manifest
-└── README.md                # You are here
+│   └── index.js             # Shared: tracking, persistence
+├── jest.config.cjs          # Jest config (CommonJS)
+├── .eslintrc.cjs            # ESLint config (CommonJS)
+├── package.json             # ESM project manifest
+├── CONTRIBUTING.md          # Contribution guide
+├── LICENSE                  # MIT
+└── README.md                # This file
 ```
+
+### ESM / CJS Split
+
+| Context | Extension | Reason |
+|---------|-----------|--------|
+| Source code | `.js` | ES Modules (`"type": "module"`) |
+| Plugin code | `.js` | ES Modules (AGNT requirement) |
+| Jest config | `.cjs` | CommonJS (Jest doesn't read ESM config) |
+| ESLint config | `.cjs` | CommonJS (same reason) |
+| Tests | `.test.js` | ESM (Jest with `--experimental-vm-modules`) |
 
 ---
 
@@ -204,11 +301,9 @@ rtk-agnt-integration/
 
 This project follows **Test-Driven Development (TDD)**.
 
-- **Unit tests:** `__tests__/rtk-runner.test.js` — mocks `child_process.exec`
+- **Unit tests:** `__tests__/*.test.js` — Jest with ESM
 - **Coverage threshold:** 80% branches, functions, lines, statements
 - **CI:** GitHub Actions runs tests on Node 18, 20, 22
-
-Run locally:
 
 ```bash
 npm test
@@ -216,19 +311,22 @@ npm test
 
 ---
 
+## CI/CD
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | Push/PR to `main` | Tests, lint, plugin build verification |
+| `release.yml` | Git tag `v*.*.*` | Build plugin + create GitHub Release |
+
+---
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Write tests first (see TDD section above)
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
-
-Please ensure:
-- All tests pass (`npm test`)
-- Linter is clean (`npm run lint`)
-- Code coverage stays above 80%
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- TDD workflow
+- Commit conventions (Conventional Commits)
+- Coverage requirements
+- Plugin architecture
 
 ---
 
