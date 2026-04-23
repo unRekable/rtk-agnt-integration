@@ -1,0 +1,38 @@
+{
+  "name": "rtk-agnt-integration",
+  "version": "1.0.0",
+  "description": "AGNT integration for RTK (Rust Token Killer). Runs shell commands through RTK to save 60-90% tokens on outputs like git status, cargo test, docker ps, and more.",
+  "author": "AGNT Community",
+  "license": "MIT",
+  "tools": [
+    {
+      "type": "rtk-runner",
+      "entryPoint": "./rtk-runner.js",
+      "schema": {
+        "title": "RTK Runner",
+        "category": "utility",
+        "description": "Executes shell commands through RTK (Rust Token Killer) to return token-optimized output.",
+        "parameters": {
+          "command": {
+            "type": "string",
+            "description": "The shell command to run through RTK (e.g. 'git status', 'cargo test', 'docker ps', 'ls -la')"
+          },
+          "workingDirectory": {
+            "type": "string",
+            "description": "Optional working directory to execute the command in"
+          },
+          "ultraCompact": {
+            "type": "boolean",
+            "default": false,
+            "description": "Use RTK ultra-compact mode (-u) for maximum token savings"
+          },
+          "rawFallback": {
+            "type": "boolean",
+            "default": true,
+            "description": "If RTK is not installed, fallback to raw command output"
+          }
+        }
+      }
+    }
+  ]
+}
