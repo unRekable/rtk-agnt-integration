@@ -11,6 +11,7 @@
 ## Architecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1a1a2e', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#e53d8f', 'lineColor': '#12e0ff', 'secondaryColor': '#16213e', 'tertiaryColor': '#0f3460', 'background': '#1a1a2e'}}}%%
 graph TD
     subgraph AGNT["AGNT Operating System"]
         A[Agent / Workflow]
@@ -42,11 +43,18 @@ graph TD
     C -->|read| G
     D -->|read| G
     D -->|generate| I[HTML Widget]
+
+    style AGNT fill:#1a1a2e,stroke:#e53d8f,stroke-width:2px,color:#e0e0e0
+    style Plugin fill:#16213e,stroke:#12e0ff,stroke-width:2px,color:#e0e0e0
+    style Persistence fill:#0f3460,stroke:#19ef83,stroke-width:2px,color:#e0e0e0
+    style External fill:#2a2a4e,stroke:#ffd700,stroke-width:2px,color:#e0e0e0
+    style I fill:#16213e,stroke:#e53d8f,stroke-width:2px,color:#e0e0e0
 ```
 
 ### Data Flow
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1a1a2e', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#e53d8f', 'lineColor': '#12e0ff', 'secondaryColor': '#16213e', 'background': '#1a1a2e'}}}%%
 sequenceDiagram
     participant User as User/Agent
     participant Runner as Shell Command Runner
@@ -96,7 +104,7 @@ The fastest way to see the full visual setup is to import the production workflo
     {
       "id": "trigger-1",
       "type": "trigger",
-      "name": "Run",
+      "name": "Button",
       "data": { "triggerType": "button" }
     },
     {
@@ -139,7 +147,7 @@ The fastest way to see the full visual setup is to import the production workflo
 ### Build Manually
 
 1. Go to **Workflows → New Workflow**
-2. Add a **Trigger** node (Button or On Load)
+2. Add a **Button Trigger** node (or Time Trigger / Webhook Trigger)
 3. Add **Shell Command Runner** → set `command` to `git status`
 4. Add **Savings Statistics** → set `period` to `all`
 5. Add **Savings Dashboard** → no parameters needed
