@@ -1,0 +1,90 @@
+{
+  "name": "RTK Enterprise Command Center",
+  "description": "Professional RTK token optimization dashboard with charts and analytics",
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "type": "trigger",
+      "position": { "x": 96, "y": 96 },
+      "config": {
+        "label": "RTK Trigger",
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "runner-1",
+      "type": "rtk-runner",
+      "position": { "x": 480, "y": 96 },
+      "config": {
+        "label": "RTK Runner",
+        "command": "git status",
+        "ultraCompact": false,
+        "rawFallback": true
+      }
+    },
+    {
+      "id": "stats-1",
+      "type": "rtk-stats",
+      "position": { "x": 768, "y": 96 },
+      "config": {
+        "label": "RTK Stats",
+        "period": "all"
+      }
+    },
+    {
+      "id": "build-dashboard",
+      "type": "execute-javascript",
+      "position": { "x": 1056, "y": 96 },
+      "config": {
+        "label": "Build Dashboard HTML",
+        "code": "const totalRuns = {{rTKStats.totalRuns}} || 0;\nconst rtkRuns = {{rTKStats.rtkRuns}} || 0;\nconst fallbackRuns = {{rTKStats.fallbackRuns}} || 0;\nconst totalTokensSaved = {{rTKStats.totalTokensSaved}} || 0;\nconst history = {{rTKStats.history}} || [];\nconst efficiency = totalRuns > 0 ? ((rtkRuns / totalRuns) * 100).toFixed(1) : 0;\nconst avgSavings = totalRuns > 0 ? (totalTokensSaved / totalRuns).toFixed(0) : 0;\n\n`<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>AGNT RTK Command Center</title>\n<style>\n@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');\n:root {\n  color-scheme: dark light;\n  --font: 'Inter', system-ui, -apple-system, sans-serif;\n  --radius: 16px;\n  --gap: 24px;\n  --space: 48px;\n}\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #09090b; --fg: #fafafa; --card: #18181b; --card-border: #27272a;\n    --card-hover: #3f3f46; --muted: #a1a1aa; --label: #71717a;\n    --accent-start: #6366f1; --accent-end: #8b5cf6; --success: #22c55e;\n    --warning: #eab308; --footer: #52525b; --progress-bg: #27272a;\n    --shadow: rgba(0,0,0,.3);\n  }\n}\n@media (prefers-color-scheme: light) {\n  :root {\n    --bg: #ffffff; --fg: #18181b; --card: #f4f4f5; --card-border: #e4e4e7;\n    --card-hover: #d4d4d8; --muted: #52525b; --label: #71717a;\n    --accent-start: #4f46e5; --accent-end: #7c3aed; --success: #16a34a;\n    --warning: #ca8a04; --footer: #a1a1aa; --progress-bg: #e4e4e7;\n    --shadow: rgba(0,0,0,.08);\n  }\n}\n* { margin:0; padding:0; box-sizing:border-box; }\nbody { background: var(--bg); color: var(--fg); font-family: var(--font); padding: var(--space); line-height: 1.5; min-height: 100vh; }\n.container { max-width:1280px; margin:0 auto; }\n.header { border-bottom: 1px solid var(--card-border); padding-bottom: 24px; margin-bottom: var(--space); display:flex; justify-content:space-between; align-items:flex-end; }\n.header h1 { font-size:32px; font-weight:700; background: linear-gradient(135deg, var(--accent-start), var(--accent-end)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:-0.025em; }\n.header p { color: var(--muted); margin-top:8px; font-size:14px; }\n.badge { background: var(--card); border:1px solid var(--card-border); padding:6px 12px; border-radius:9999px; font-size:12px; color: var(--label); font-weight:500; }\n.grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--gap); margin-bottom: var(--space); }\n.card { background: var(--card); border-radius: var(--radius); padding:28px; border:1px solid var(--card-border); transition: all .2s ease; position:relative; overflow:hidden; }\n.card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, var(--accent-start), var(--accent-end)); opacity:0; transition: opacity .2s; }\n.card:hover { transform: translateY(-2px); border-color: var(--card-hover); box-shadow: 0 20px 25px -5px var(--shadow); }\n.card:hover::before { opacity:1; }\n.card-label { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--label); margin-bottom:12px; font-weight:600; }\n.card-value { font-size:36px; font-weight:700; color: var(--fg); letter-spacing:-0.02em; }\n.card-value.accent { background: linear-gradient(135deg, var(--accent-start), var(--accent-end)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }\n.card-value.success { color: var(--success); }\n.card-value.warning { color: var(--warning); }\n.card-meta { color: var(--label); font-size:13px; margin-top:8px; }\n.progress-bar { height:6px; background: var(--progress-bg); border-radius:9999px; margin-top:16px; overflow:hidden; }\n.progress-fill { height:100%; background: linear-gradient(90deg, var(--accent-start), var(--accent-end)); border-radius:9999px; transition: width .6s ease; }\n.footer { display:flex; justify-content:space-between; align-items:center; margin-top:64px; padding-top:24px; border-top:1px solid var(--card-border); color: var(--footer); font-size:12px; }\n.status-dot { width:8px; height:8px; background: var(--success); border-radius:50%; display:inline-block; margin-right:8px; animation: pulse 2s infinite; }\n@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }\n</style>\n</head>\n<body>\n<div class=\"container\">\n<div class=\"header\">\n<div><h1>RTK Enterprise Command Center</h1><p>Real-time token optimization analytics powered by AGNT</p></div>\n<div class=\"badge\"><span class=\"status-dot\"></span>Live System</div>\n</div>\n<div class=\"grid\">\n<div class=\"card\"><div class=\"card-label\">Total Commands</div><div class=\"card-value\">${totalRuns.toLocaleString()}</div><div class=\"card-meta\">All time executions</div><div class=\"progress-bar\"><div class=\"progress-fill\" style=\"width:100%\"></div></div></div>\n<div class=\"card\"><div class=\"card-label\">RTK Optimized</div><div class=\"card-value success\">${rtkRuns.toLocaleString()}</div><div class=\"card-meta\">${efficiency}% optimization rate</div><div class=\"progress-bar\"><div class=\"progress-fill\" style=\"width:${efficiency}%\"></div></div></div>\n<div class=\"card\"><div class=\"card-label\">Fallback Runs</div><div class=\"card-value warning\">${fallbackRuns.toLocaleString()}</div><div class=\"card-meta\">Raw execution mode</div></div>\n<div class=\"card\"><div class=\"card-label\">Tokens Saved</div><div class=\"card-value accent\">${totalTokensSaved.toLocaleString()}</div><div class=\"card-meta\">Total token economy</div></div>\n<div class=\"card\"><div class=\"card-label\">Avg Savings / Run</div><div class=\"card-value\">${Number(avgSavings).toLocaleString()}</div><div class=\"card-meta\">Mean optimization yield</div></div>\n<div class=\"card\"><div class=\"card-label\">History Depth</div><div class=\"card-value\">${history.length}</div><div class=\"card-meta\">Tracked sessions</div></div>\n</div>\n<div class=\"footer\"><div>Generated by AGNT Workflow Engine</div><div>${new Date().toISOString()}</div></div>\n</div>\n<script>(function(){const mq=window.matchMedia('(prefers-color-scheme: dark)');const set=()=>document.documentElement.setAttribute('data-theme',mq.matches?'dark':'light');set();mq.addEventListener('change',set);})();</script>\n</body>\n</html>`"
+      }
+    },
+    {
+      "id": "preview-dashboard",
+      "type": "html-preview",
+      "position": { "x": 1376, "y": 96 },
+      "config": {
+        "label": "Enterprise Dashboard",
+        "htmlSource": "{{buildDashboardHTML.result}}",
+        "sandboxMode": "Allow Scripts"
+      }
+    },
+    {
+      "id": "build-chart",
+      "type": "execute-javascript",
+      "position": { "x": 1056, "y": 240 },
+      "config": {
+        "label": "Build Chart JSON",
+        "code": "const rtk = {{rTKStats.rtkRuns}} || 0;\nconst fb = {{rTKStats.fallbackRuns}} || 0;\nJSON.stringify({\n  labels: ['RTK Optimized', 'Fallback (Raw)'],\n  datasets: [{\n    label: 'Command Executions',\n    data: [rtk, fb],\n    backgroundColor: ['#6366f1', '#27272a'],\n    borderColor: ['#8b5cf6', '#3f3f46'],\n    borderWidth: 2\n  }]\n});"
+      }
+    },
+    {
+      "id": "preview-chart",
+      "type": "chart-preview",
+      "position": { "x": 1376, "y": 240 },
+      "config": {
+        "label": "Savings Chart",
+        "chartData": "{{buildChartJSON.result}}",
+        "chartType": "doughnut"
+      }
+    },
+    {
+      "id": "native-dashboard",
+      "type": "rtk-dashboard",
+      "position": { "x": 1056, "y": 384 },
+      "config": {
+        "label": "RTK Dashboard (Native)"
+      }
+    }
+  ],
+  "edges": [
+    { "source": "trigger-1", "target": "runner-1" },
+    { "source": "runner-1", "target": "stats-1" },
+    { "source": "stats-1", "target": "build-dashboard" },
+    { "source": "build-dashboard", "target": "preview-dashboard" },
+    { "source": "stats-1", "target": "build-chart" },
+    { "source": "build-chart", "target": "preview-chart" },
+    { "source": "stats-1", "target": "native-dashboard" }
+  ]
+}
