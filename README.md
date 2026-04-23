@@ -70,71 +70,20 @@ sequenceDiagram
 2. In AGNT: **Marketplace → Install from file** → select the `.agnt` file
 3. The plugin hot-reloads automatically
 
-### Import the Production Workflow
-
-The fastest way to see the full visual setup is to import the production workflow:
-
-1. Go to **Workflows** in AGNT
-2. Click **Import** (or **New Workflow → Import JSON**)
-3. Paste the JSON below:
-
-```json
-{
-  "name": "RTK Token Optimizer",
-  "description": "Execute shell commands via RTK with live token savings dashboard",
-  "nodes": [
-    {
-      "id": "trigger-1",
-      "type": "trigger",
-      "name": "Button",
-      "data": { "triggerType": "button" }
-    },
-    {
-      "id": "runner-1",
-      "type": "rtk-runner",
-      "name": "Shell Command Runner",
-      "data": {
-        "command": "git status",
-        "ultraCompact": false,
-        "rawFallback": true
-      }
-    },
-    {
-      "id": "stats-1",
-      "type": "rtk-stats",
-      "name": "Savings Statistics",
-      "data": { "period": "all" }
-    },
-    {
-      "id": "dashboard-1",
-      "type": "rtk-dashboard",
-      "name": "Savings Dashboard",
-      "data": {}
-    }
-  ],
-  "edges": [
-    { "source": "trigger-1", "target": "runner-1" },
-    { "source": "runner-1", "target": "stats-1" },
-    { "source": "stats-1", "target": "dashboard-1" }
-  ]
-}
-```
-
-4. Click **Import**
-5. Click **Run** — you will see:
-   - **Runner output**: git status (compressed via RTK)
-   - **Stats output**: Total runs, tokens saved, command history
-   - **Dashboard output**: Visual HTML widget with stat cards, charts, and sparklines
-
-### Build Manually
+### Build Your First Workflow
 
 1. Go to **Workflows → New Workflow**
-2. Add a **Button Trigger** node (or Time Trigger / Webhook Trigger)
+2. Add a **Button Trigger** node
 3. Add **Shell Command Runner** → set `command` to `git status`
 4. Add **Savings Statistics** → set `period` to `all`
 5. Add **Savings Dashboard** → no parameters needed
 6. Connect: Trigger → Runner → Stats → Dashboard
 7. Click **Run**
+
+After running, you will see:
+- **Runner output**: git status (compressed via RTK)
+- **Stats output**: Total runs, tokens saved, command history
+- **Dashboard output**: Visual HTML widget with stat cards, charts, and sparklines
 
 ---
 
