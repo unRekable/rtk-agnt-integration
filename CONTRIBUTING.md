@@ -15,7 +15,7 @@ git checkout -b feature/your-feature-name
 **All changes require tests.** Write the test first, watch it fail, then implement.
 
 ```bash
-# Run tests
+# Run tests (ESM mode)
 npm test
 
 # Watch mode
@@ -24,8 +24,8 @@ npm run test:watch
 
 ### 3. Code Standards
 
-- **ES Modules only** (`import/export`) for AGNT plugin code
-- **CommonJS** (`require/module.exports`) allowed for Node.js test utilities
+- **ES Modules only** (`import/export`) for source and plugin code
+- **Config files** use `.cjs` extension (Jest, ESLint)
 - All error paths must return `{ error: "..." }` — never throw uncaught exceptions
 - Log errors with `[${this.name}]` prefix for traceability
 - Keep `this.name` identical to manifest `tool.type`
@@ -76,15 +76,33 @@ ci: add Node 22 to test matrix
 - [ ] Documentation updated (README, inline JSDoc)
 - [ ] Commit messages follow convention
 
+## Architecture
+
+When contributing, keep the architecture in mind:
+
+```mermaid
+graph TD
+    A[AGNT Agent] --> B[rtk-runner]
+    A --> C[rtk-stats]
+    A --> D[rtk-dashboard]
+    B --> E[RTK CLI]
+    B --> F[Token Tracker]
+    F --> G[stats.json]
+    C --> G
+    D --> G
+    E --> H[Compressed Output]
+    F --> I[Dashboard HTML]
+```
+
 ## Reporting Issues
 
 Please include:
 1. AGNT version
-2. Node.js version
+2. Node.js version (`node --version`)
 3. RTK version (`rtk --version`)
 4. Minimal reproduction steps
 5. Expected vs. actual behavior
 
 ## Security
 
-For security vulnerabilities, please email security@rtk-agnt.dev instead of opening a public issue.
+For security vulnerabilities, please open a private issue instead of a public one.
