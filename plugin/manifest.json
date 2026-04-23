@@ -1,7 +1,7 @@
 {
   "name": "rtk-agnt-integration",
   "version": "3.0.0",
-  "description": "AGNT plugin for RTK (Rust Token Killer). Compress shell output by 60-90% before LLM ingestion.",
+  "description": "Run shell commands through RTK to save 60-90% tokens before LLM ingestion.",
   "author": "AGNT Community",
   "icon": "terminal",
   "homepage": "https://github.com/unRekable/rtk-agnt-integration",
@@ -11,11 +11,11 @@
       "type": "rtk-runner",
       "entryPoint": "./rtk-runner.js",
       "schema": {
-        "title": "RTK Runner",
+        "title": "Shell Command Runner",
         "category": "action",
         "type": "rtk-runner",
         "icon": "terminal",
-        "description": "Run shell commands through RTK to save 60-90% tokens. Tracks savings automatically.",
+        "description": "Execute any shell command through RTK. Automatically tracks token savings in the background.",
         "parameters": {
           "command": {
             "type": "string",
@@ -34,13 +34,13 @@
             "type": "boolean",
             "inputType": "checkbox",
             "default": false,
-            "description": "Use RTK ultra-compact mode (-u) for maximum compression"
+            "description": "Use ultra-compact mode (-u) for maximum token savings"
           },
           "rawFallback": {
             "type": "boolean",
             "inputType": "checkbox",
             "default": true,
-            "description": "Fallback to raw output if RTK is not installed"
+            "description": "Fall back to raw output if RTK is not installed"
           }
         },
         "outputs": {
@@ -62,16 +62,16 @@
       "type": "rtk-stats",
       "entryPoint": "./rtk-stats.js",
       "schema": {
-        "title": "RTK Stats",
+        "title": "Savings Statistics",
         "category": "utility",
         "type": "rtk-stats",
-        "icon": "chart-bar",
-        "description": "View token savings statistics and command history.",
+        "icon": "table",
+        "description": "View your token savings statistics and command history over time.",
         "parameters": {
           "period": {
             "type": "string",
             "inputType": "select",
-            "description": "Time period",
+            "description": "Time period to summarize",
             "default": "all",
             "options": [
               { "value": "all", "label": "All time" },
@@ -96,11 +96,11 @@
       "type": "rtk-dashboard",
       "entryPoint": "./rtk-dashboard.js",
       "schema": {
-        "title": "RTK Dashboard",
+        "title": "Savings Dashboard",
         "category": "widget",
         "type": "rtk-dashboard",
-        "icon": "chart-line",
-        "description": "Visual dashboard showing token savings. Dark/light theme auto-detect.",
+        "icon": "tachometer-alt",
+        "description": "Visual dashboard with charts showing your token savings over time. Auto-detects AGNT theme.",
         "parameters": {},
         "outputs": {
           "html": { "type": "string" }
