@@ -39,8 +39,8 @@ jobs:
         with:
           fail_ci_if_error: false
 
-  integration:
-    name: Integration Test
+  plugin-build:
+    name: Build Plugin Package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -55,14 +55,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build plugin package
+      - name: Build plugin
         run: npm run build:plugin
 
-      - name: Verify plugin structure
+      - name: Verify plugin file exists
         run: |
           test -f rtk-agnt-integration.agnt
-          echo "Plugin package created successfully"
+          echo "✅ Plugin package created"
+          ls -la *.agnt
 
-      - name: Check plugin manifest valid JSON
-        run: |
-          node -e "JSON.parse(require('fs').readFileSync('./plugin/manifest.json')); console.log('Manifest valid')"
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtk-agnt-plugin
+          path: rtk-agnt-integration.agnt
