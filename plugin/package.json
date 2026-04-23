@@ -1,0 +1,9 @@
+{
+  "name": "rtk-agnt-integration",
+  "version": "3.0.0",
+  "description": "AGNT integration for RTK (Rust Token Killer)",
+  "type": "module",
+  "main": "rtk-runner.js",
+  "author": "AGNT Community",
+  "license": "MIT"
+}
