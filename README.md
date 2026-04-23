@@ -8,6 +8,108 @@
 
 ---
 
+## Quick Start — Visual Setup in 2 Minutes
+
+### Step 1: Install the Plugin
+
+1. Download [`rtk-agnt-integration.agnt`](https://github.com/unRekable/rtk-agnt-integration/releases/latest) from Releases
+2. In AGNT: **Marketplace → Install from file** → select the `.agnt` file
+3. The plugin hot-reloads automatically — no restart needed
+
+### Step 2: Import the Demo Workflow (Recommended)
+
+The fastest way to see everything visually is to import the pre-built demo workflow:
+
+**Option A — Import JSON:**
+1. Go to **Workflows** in AGNT
+2. Click **Import** (or **New Workflow → Import JSON**)
+3. Paste the JSON below:
+
+```json
+{
+  "name": "RTK Token Optimizer Demo",
+  "description": "Visual demo of RTK token savings tracking",
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "type": "trigger",
+      "name": "On Load",
+      "data": { "triggerType": "onLoad" }
+    },
+    {
+      "id": "runner-1",
+      "type": "rtk-runner",
+      "name": "Run git status",
+      "data": {
+        "command": "git status",
+        "ultraCompact": false,
+        "rawFallback": true
+      }
+    },
+    {
+      "id": "stats-1",
+      "type": "rtk-stats",
+      "name": "Show Stats",
+      "data": { "period": "all" }
+    },
+    {
+      "id": "dashboard-1",
+      "type": "rtk-dashboard",
+      "name": "Savings Dashboard",
+      "data": {}
+    }
+  ],
+  "edges": [
+    { "source": "trigger-1", "target": "runner-1" },
+    { "source": "runner-1", "target": "stats-1" },
+    { "source": "stats-1", "target": "dashboard-1" }
+  ]
+}
+```
+
+4. Click **Import** — the workflow appears with all 3 tools connected
+5. Click **Run** — you will see:
+   - **Runner output**: git status (compressed via RTK)
+   - **Stats output**: Total runs, tokens saved, command history
+   - **Dashboard output**: Visual HTML widget with charts
+
+**Option B — Build Manually:**
+1. Go to **Workflows → New Workflow**
+2. Add a **Trigger** node (e.g. "Button" or "On Load")
+3. Add a **Shell Command Runner** node → set `command` to `git status`
+4. Add a **Savings Statistics** node → set `period` to `all`
+5. Add a **Savings Dashboard** node → no parameters needed
+6. Connect them: Trigger → Runner → Stats → Dashboard
+7. Click **Run**
+
+### Step 3: See It Visually
+
+After running, you will see **4 output cards** in the workflow view:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  RTK Token Optimizer Demo                                   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────┐    ┌──────────────┐    ┌───────────────┐  │
+│  │  🖥️ Runner  │───▶│  📊 Stats    │───▶│  📈 Dashboard │  │
+│  │             │    │              │    │               │  │
+│  │ stdout:     │    │ totalRuns: 1 │    │ [Visual HTML] │  │
+│  │ M  file.js  │    │ tokensSaved: │    │ Stat Cards    │  │
+│  │ ?? new.txt  │    │ 2400         │    │ Charts        │  │
+│  └─────────────┘    └──────────────┘    └───────────────┘  │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+The **Dashboard card** renders as an interactive HTML widget with:
+- **Stat Cards**: Total Runs, Tokens Saved, RTK Runs, Fallbacks
+- **Adoption Ring**: Percentage of RTK vs fallback usage
+- **Sparkline**: Token savings trend over last 20 runs
+- **Bar Chart**: Top commands by tokens saved
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -18,9 +120,9 @@ graph TD
     end
 
     subgraph Plugin["RTK-AGNT Plugin v3"]
-        B[rtk-runner]
-        C[rtk-stats]
-        D[rtk-dashboard]
+        B[Shell Command Runner]
+        C[Savings Statistics]
+        D[Savings Dashboard]
         F[Token Tracker]
     end
 
@@ -57,11 +159,11 @@ graph TD
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e8eaf6', 'primaryTextColor': '#283593', 'primaryBorderColor': '#3949ab', 'lineColor': '#616161', 'secondaryColor': '#f1f8e9'}}}%%
 sequenceDiagram
     participant User as User/Agent
-    participant Runner as rtk-runner
+    participant Runner as Shell Command Runner
     participant RTK as RTK CLI
     participant Tracker as Token Tracker
     participant Stats as stats.json
-    participant Dash as rtk-dashboard
+    participant Dash as Savings Dashboard
 
     User->>Runner: execute({ command: "git status" })
     Runner->>RTK: rtk git status
@@ -140,7 +242,7 @@ npm run install:agnt
 
 This plugin provides **3 tools** for AGNT:
 
-### 1. RTK Runner (`rtk-runner`)
+### 1. Shell Command Runner (`rtk-runner`)
 
 Executes shell commands through RTK with automatic token savings tracking.
 
@@ -178,7 +280,7 @@ Executes shell commands through RTK with automatic token savings tracking.
 
 ---
 
-### 2. RTK Stats (`rtk-stats`)
+### 2. Savings Statistics (`rtk-stats`)
 
 Retrieve token savings statistics and command history.
 
@@ -206,7 +308,7 @@ Retrieve token savings statistics and command history.
 
 ---
 
-### 3. RTK Dashboard (`rtk-dashboard`)
+### 3. Savings Dashboard (`rtk-dashboard`)
 
 Interactive token savings dashboard with charts and visualizations. **Theme-aware** — automatically adapts to AGNT's dark/light mode.
 
@@ -234,7 +336,7 @@ Tracked metrics:
 - Per-command breakdown
 - Last 100 runs history
 
-This data persists across AGNT restarts and is used by both `rtk-stats` and `rtk-dashboard`.
+This data persists across AGNT restarts and is used by both `Savings Statistics` and `Savings Dashboard`.
 
 ---
 
