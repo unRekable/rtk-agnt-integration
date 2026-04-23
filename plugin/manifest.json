@@ -1,36 +1,110 @@
 {
   "name": "rtk-agnt-integration",
-  "version": "1.0.0",
-  "description": "AGNT integration for RTK (Rust Token Killer). Runs shell commands through RTK to save 60-90% tokens on outputs like git status, cargo test, docker ps, and more.",
+  "version": "3.0.0",
+  "description": "AGNT integration for RTK (Rust Token Killer) with token savings tracking, stats dashboard, and theme-aware widget. Compress shell output by 60-90% before LLM ingestion.",
   "author": "AGNT Community",
-  "license": "MIT",
+  "icon": "terminal",
+  "homepage": "https://github.com/unRekable/rtk-agnt-integration",
+  "displayName": "RTK Token Optimizer",
   "tools": [
     {
       "type": "rtk-runner",
       "entryPoint": "./rtk-runner.js",
       "schema": {
         "title": "RTK Runner",
-        "category": "utility",
-        "description": "Executes shell commands through RTK (Rust Token Killer) to return token-optimized output.",
+        "category": "action",
+        "type": "rtk-runner",
+        "icon": "terminal",
+        "description": "Executes shell commands through RTK (Rust Token Killer) with automatic token savings tracking.",
         "parameters": {
           "command": {
             "type": "string",
-            "description": "The shell command to run through RTK (e.g. 'git status', 'cargo test', 'docker ps', 'ls -la')"
+            "inputType": "text",
+            "description": "The shell command to run through RTK (e.g. 'git status', 'cargo test', 'docker ps')",
+            "required": true,
+            "placeholder": "git status"
           },
           "workingDirectory": {
             "type": "string",
-            "description": "Optional working directory to execute the command in"
+            "inputType": "text",
+            "description": "Optional working directory to execute the command in",
+            "placeholder": "/home/user/project"
           },
           "ultraCompact": {
             "type": "boolean",
+            "inputType": "checkbox",
             "default": false,
             "description": "Use RTK ultra-compact mode (-u) for maximum token savings"
           },
           "rawFallback": {
             "type": "boolean",
+            "inputType": "checkbox",
             "default": true,
             "description": "If RTK is not installed, fallback to raw command output"
           }
+        },
+        "outputs": {
+          "success": { "type": "boolean", "description": "Whether the command executed successfully" },
+          "rtkInstalled": { "type": "boolean", "description": "Whether RTK was available on the system" },
+          "exitCode": { "type": "number", "description": "Shell exit code" },
+          "stdout": { "type": "string", "description": "Compressed (or raw) command output" },
+          "stderr": { "type": "string", "description": "Error output if any" },
+          "commandExecuted": { "type": "string", "description": "The actual command that was run" },
+          "tokensSaved": { "type": "number", "description": "Tokens saved on this run" },
+          "percentSaved": { "type": "number", "description": "Percentage of tokens saved" },
+          "totalTokensSaved": { "type": "number", "description": "Cumulative tokens saved across all runs" },
+          "totalRuns": { "type": "number", "description": "Total number of runs executed" },
+          "note": { "type": "string", "description": "Status message" },
+          "error": { "type": "string", "description": "Error message if execution failed" }
+        }
+      }
+    },
+    {
+      "type": "rtk-stats",
+      "entryPoint": "./rtk-stats.js",
+      "schema": {
+        "title": "RTK Stats",
+        "category": "utility",
+        "type": "rtk-stats",
+        "icon": "chart",
+        "description": "Retrieve token savings statistics and command history.",
+        "parameters": {
+          "period": {
+            "type": "string",
+            "inputType": "select",
+            "description": "Time period to summarize",
+            "default": "all",
+            "options": [
+              { "value": "all", "label": "All time" },
+              { "value": "today", "label": "Today" },
+              { "value": "week", "label": "Last 7 days" },
+              { "value": "month", "label": "Last 30 days" }
+            ]
+          }
+        },
+        "outputs": {
+          "totalRuns": { "type": "number" },
+          "rtkRuns": { "type": "number" },
+          "fallbackRuns": { "type": "number" },
+          "totalTokensSaved": { "type": "number" },
+          "commands": { "type": "object" },
+          "history": { "type": "array" },
+          "success": { "type": "boolean" }
+        }
+      }
+    },
+    {
+      "type": "rtk-dashboard",
+      "entryPoint": "./rtk-dashboard.js",
+      "schema": {
+        "title": "RTK Dashboard",
+        "category": "widget",
+        "type": "rtk-dashboard",
+        "icon": "dashboard",
+        "description": "Interactive token savings dashboard with charts and visualizations. Theme-aware and responsive.",
+        "parameters": {},
+        "outputs": {
+          "html": { "type": "string", "description": "Dashboard HTML widget" }
         }
       }
     }
