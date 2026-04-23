@@ -11,6 +11,7 @@
 ## Architecture
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryTextColor': '#1565c0', 'primaryBorderColor': '#1976d2', 'lineColor': '#424242', 'secondaryColor': '#f3e5f5', 'tertiaryColor': '#e8f5e9'}}}%%
 graph TD
     subgraph AGNT["AGNT Operating System"]
         A[Agent / Workflow]
@@ -43,15 +44,17 @@ graph TD
     D -->|read| G
     D -->|generate| I[HTML Widget]
 
-    style AGNT fill:#16213e,stroke:#e53d8f,stroke-width:2px,color:#fff
-    style Plugin fill:#1a1a2e,stroke:#12e0ff,stroke-width:2px,color:#fff
-    style Persistence fill:#0f3460,stroke:#19ef83,stroke-width:2px,color:#fff
-    style External fill:#2a2a4e,stroke:#ffd700,stroke-width:2px,color:#fff
+    style AGNT fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style Plugin fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style Persistence fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style External fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style I fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 ```
 
 ### Data Flow
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e8eaf6', 'primaryTextColor': '#283593', 'primaryBorderColor': '#3949ab', 'lineColor': '#616161', 'secondaryColor': '#f1f8e9'}}}%%
 sequenceDiagram
     participant User as User/Agent
     participant Runner as rtk-runner
@@ -245,7 +248,7 @@ cd rtk-agnt-integration
 # Install
 npm install
 
-# Run tests (ESM with Jest)
+# Run tests
 npm test
 
 # Watch mode
@@ -263,7 +266,7 @@ npm run build:plugin
 ```
 rtk-agnt-integration/
 ├── .github/workflows/       # CI/CD pipelines
-├── __tests__/               # Jest test suite (ESM)
+├── __tests__/               # Test suite
 │   ├── index.test.js        # Core library tests
 │   ├── rtk-stats.test.js    # Stats tool tests
 │   └── rtk-dashboard.test.js # Dashboard tests
