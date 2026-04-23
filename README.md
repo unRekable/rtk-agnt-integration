@@ -12,9 +12,9 @@
 
 ```mermaid
 graph TD
-    A[Agent / Workflow] --> B[Shell Command Runner]
-    A --> C[Savings Statistics]
-    A --> D[Savings Dashboard]
+    A[Agent / Workflow] --> B[RTK Runner]
+    A --> C[RTK Stats]
+    A --> D[RTK Dashboard]
     B --> E[RTK CLI]
     E --> F[Shell Commands]
     B --> G[Token Tracker]
@@ -39,11 +39,11 @@ graph TD
 ```mermaid
 sequenceDiagram
     participant User as User/Agent
-    participant Runner as Shell Command Runner
+    participant Runner as RTK Runner
     participant RTK as RTK CLI
     participant Tracker as Token Tracker
     participant Stats as stats.json
-    participant Dash as Savings Dashboard
+    participant Dash as RTK Dashboard
 
     User->>Runner: execute({ command: "git status" })
     Runner->>RTK: rtk git status
@@ -64,39 +64,20 @@ sequenceDiagram
 
 ## Quick Start
 
-### Prerequisites
-
-- **Node.js** >= 18.0.0
-- **AGNT** running locally ([install guide](https://github.com/agnt-gg/agnt))
-- **RTK** (optional but recommended):
-  ```bash
-  # macOS / Linux
-  curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
-
-  # or Homebrew
-  brew install rtk
-  ```
-
 ### Install the Plugin
 
 1. Download [`rtk-agnt-integration.agnt`](https://github.com/unRekable/rtk-agnt-integration/releases/latest) from Releases
 2. In AGNT: **Marketplace → Install from file** → select the `.agnt` file
 3. The plugin hot-reloads automatically
 
-### Build Your First Workflow
+### Use the Tools in a Workflow
 
 1. Go to **Workflows → New Workflow**
-2. Add a **Webhook Trigger**, **Time Trigger**, or **Email Receiver Trigger** node
-3. Add **Shell Command Runner** → set your command
-4. Add **Savings Statistics** → set `period` to `all`
-5. Add **Savings Dashboard** → no parameters needed
-6. Connect: Trigger → Runner → Stats → Dashboard
-7. Click **Run**
-
-After running, you will see:
-- **Runner output**: Command output (compressed via RTK if installed, raw otherwise)
-- **Stats output**: Total runs, tokens saved, command history
-- **Dashboard output**: Visual HTML widget with stat cards, charts, and sparklines
+2. Add a **Trigger** node
+3. Add **RTK Runner** → enter a shell command (e.g. `git status`, `cargo test`, `docker ps`)
+4. Add **RTK Stats** → select a time period (`all`, `today`, `week`, `month`)
+5. Add **RTK Dashboard** → no configuration needed
+6. Connect the nodes and click **Run**
 
 ---
 
@@ -118,6 +99,19 @@ Instead of dumping raw `git status`, `cargo test`, or `docker ps` output into yo
 ---
 
 ## Installation
+
+### Prerequisites
+
+- **Node.js** >= 18.0.0
+- **AGNT** running locally ([install guide](https://github.com/agnt-gg/agnt))
+- **RTK** (optional but recommended):
+  ```bash
+  # macOS / Linux
+  curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+
+  # or Homebrew
+  brew install rtk
+  ```
 
 ### Option A: Install from GitHub Releases
 
@@ -147,7 +141,7 @@ npm run install:agnt
 
 This plugin provides **3 tools** for AGNT:
 
-### 1. Shell Command Runner (`rtk-runner`)
+### 1. RTK Runner (`rtk-runner`)
 
 Executes shell commands through RTK with automatic token savings tracking.
 
@@ -185,7 +179,7 @@ Executes shell commands through RTK with automatic token savings tracking.
 
 ---
 
-### 2. Savings Statistics (`rtk-stats`)
+### 2. RTK Stats (`rtk-stats`)
 
 Retrieve token savings statistics and command history.
 
@@ -213,7 +207,7 @@ Retrieve token savings statistics and command history.
 
 ---
 
-### 3. Savings Dashboard (`rtk-dashboard`)
+### 3. RTK Dashboard (`rtk-dashboard`)
 
 Interactive token savings dashboard with charts and visualizations. **Theme-aware** — automatically adapts to AGNT's dark/light mode.
 
@@ -241,7 +235,7 @@ Tracked metrics:
 - Per-command breakdown
 - Last 100 runs history
 
-This data persists across AGNT restarts and is used by both `Savings Statistics` and `Savings Dashboard`.
+This data persists across AGNT restarts and is used by both `RTK Stats` and `RTK Dashboard`.
 
 ---
 
