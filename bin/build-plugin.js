@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 /**
  * Build AGNT plugin package (.agnt file)
  * Usage: node bin/build-plugin.js
@@ -9,9 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PLUGIN_NAME = 'rtk-agnt-integration';
 const OUTPUT_FILE = `${PLUGIN_NAME}.agnt`;
 
