@@ -2,6 +2,7 @@
   "name": "rtk-agnt-integration",
   "version": "1.0.0",
   "description": "AGNT plugin and Node.js wrapper for RTK (Rust Token Killer). Compress shell output by 60-90% before LLM ingestion.",
+  "type": "module",
   "main": "src/rtk-runner.js",
   "scripts": {
     "test": "jest --coverage",
@@ -23,20 +24,17 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/rtk-agnt-integration.git"
+    "url": "https://github.com/unRekable/rtk-agnt-integration.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/rtk-agnt-integration/issues"
+    "url": "https://github.com/unRekable/rtk-agnt-integration/issues"
   },
-  "homepage": "https://github.com/your-username/rtk-agnt-integration#readme",
+  "homepage": "https://github.com/unRekable/rtk-agnt-integration#readme",
   "devDependencies": {
     "eslint": "^8.57.1",
     "jest": "^29.7.0"
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "isomorphic-git": "^1.37.5"
   }
 }
