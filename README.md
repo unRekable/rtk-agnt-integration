@@ -11,50 +11,32 @@
 ## Architecture
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1a1a2e', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#e53d8f', 'lineColor': '#12e0ff', 'secondaryColor': '#16213e', 'tertiaryColor': '#0f3460', 'background': '#1a1a2e'}}}%%
 graph TD
-    subgraph AGNT["AGNT Operating System"]
-        A[Agent / Workflow]
-    end
+    A[Agent / Workflow] --> B[Shell Command Runner]
+    A --> C[Savings Statistics]
+    A --> D[Savings Dashboard]
+    B --> E[RTK CLI]
+    E --> F[Shell Commands]
+    B --> G[Token Tracker]
+    G --> H[(stats.json)]
+    C --> H
+    D --> H
+    D --> I[HTML Widget]
 
-    subgraph Plugin["RTK-AGNT Plugin v3"]
-        B[Shell Command Runner]
-        C[Savings Statistics]
-        D[Savings Dashboard]
-        F[Token Tracker]
-    end
-
-    subgraph Persistence["Local Storage"]
-        G[(stats.json)]
-    end
-
-    subgraph External["External"]
-        E[RTK CLI]
-        H[Shell Commands]
-    end
-
-    A -->|execute| B
-    A -->|query| C
-    A -->|render| D
-    B -->|invoke| E
-    E -->|compress| H
-    B -->|record| F
-    F -->|persist| G
-    C -->|read| G
-    D -->|read| G
-    D -->|generate| I[HTML Widget]
-
-    style AGNT fill:#1a1a2e,stroke:#e53d8f,stroke-width:2px,color:#e0e0e0
-    style Plugin fill:#16213e,stroke:#12e0ff,stroke-width:2px,color:#e0e0e0
-    style Persistence fill:#0f3460,stroke:#19ef83,stroke-width:2px,color:#e0e0e0
-    style External fill:#2a2a4e,stroke:#ffd700,stroke-width:2px,color:#e0e0e0
-    style I fill:#16213e,stroke:#e53d8f,stroke-width:2px,color:#e0e0e0
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#fff3e0
+    style F fill:#fff3e0
+    style G fill:#e8f5e9
+    style H fill:#e8f5e9
+    style I fill:#fce4ec
 ```
 
 ### Data Flow
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1a1a2e', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#e53d8f', 'lineColor': '#12e0ff', 'secondaryColor': '#16213e', 'background': '#1a1a2e'}}}%%
 sequenceDiagram
     participant User as User/Agent
     participant Runner as Shell Command Runner
