@@ -64,6 +64,19 @@ sequenceDiagram
 
 ## Quick Start
 
+### Prerequisites
+
+- **Node.js** >= 18.0.0
+- **AGNT** running locally ([install guide](https://github.com/agnt-gg/agnt))
+- **RTK** (optional but recommended):
+  ```bash
+  # macOS / Linux
+  curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+
+  # or Homebrew
+  brew install rtk
+  ```
+
 ### Install the Plugin
 
 1. Download [`rtk-agnt-integration.agnt`](https://github.com/unRekable/rtk-agnt-integration/releases/latest) from Releases
@@ -73,15 +86,15 @@ sequenceDiagram
 ### Build Your First Workflow
 
 1. Go to **Workflows → New Workflow**
-2. Add a **Button Trigger** node
-3. Add **Shell Command Runner** → set `command` to `git status`
+2. Add a **Webhook Trigger**, **Time Trigger**, or **Email Receiver Trigger** node
+3. Add **Shell Command Runner** → set your command
 4. Add **Savings Statistics** → set `period` to `all`
 5. Add **Savings Dashboard** → no parameters needed
 6. Connect: Trigger → Runner → Stats → Dashboard
 7. Click **Run**
 
 After running, you will see:
-- **Runner output**: git status (compressed via RTK)
+- **Runner output**: Command output (compressed via RTK if installed, raw otherwise)
 - **Stats output**: Total runs, tokens saved, command history
 - **Dashboard output**: Visual HTML widget with stat cards, charts, and sparklines
 
@@ -105,19 +118,6 @@ Instead of dumping raw `git status`, `cargo test`, or `docker ps` output into yo
 ---
 
 ## Installation
-
-### Prerequisites
-
-- **Node.js** >= 18.0.0
-- **RTK** installed on your system:
-  ```bash
-  # macOS / Linux
-  curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
-
-  # or Homebrew
-  brew install rtk
-  ```
-- **AGNT** running locally ([install guide](https://github.com/agnt-gg/agnt))
 
 ### Option A: Install from GitHub Releases
 
