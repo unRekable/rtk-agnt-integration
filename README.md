@@ -71,14 +71,85 @@ Verify: `rtk --version`
 ## Installation
 
 1. Download `rtk-agnt-integration.agnt` from [Releases](https://github.com/unRekable/rtk-agnt-integration/releases/latest)
-2. In AGNT: **Marketplace → Install from file** → select the `.agnt` file
-3. Plugin hot-reloads automatically
+2. In AGNT, go to **Marketplace → Install from file**
+3. Select the downloaded `.agnt` file
+4. The plugin installs and activates automatically
+
+---
+
+## Supported RTK Commands
+
+This plugin supports all commands that RTK can compress. Here is the complete list:
+
+| Category | Commands |
+|----------|---------|
+| **Git** | `git status`, `git log`, `git diff`, `git add`, `git commit`, `git push` |
+| **Rust** | `cargo test`, `cargo build`, `cargo clippy` |
+| **Docker** | `docker ps`, `docker logs`, `docker inspect` |
+| **Kubernetes** | `kubectl get pods`, `kubectl logs` |
+| **Python** | `pytest`, `ruff check` |
+| **Go** | `go test` |
+| **Node.js** | `npm test`, `jest` |
+| **System** | `ls`, `tree`, `cat`, `grep`, `rg`, `read` |
+| **Cloud** | `aws s3 ls`, `gh pr list` |
+
+---
+
+## Token Savings
+
+| Command | Raw Tokens | RTK Output | Savings |
+|---------|-----------|------------|---------|
+| `git status` | ~3,000 | ~600 | **-80%** |
+| `cargo test` | ~25,000 | ~2,500 | **-90%** |
+| `docker ps` | ~900 | ~180 | **-80%** |
+| `ls -la` | ~2,000 | ~400 | **-80%** |
+| `pytest` | ~8,000 | ~800 | **-90%** |
+| `go test` | ~6,000 | ~600 | **-90%** |
+
+---
+
+## Tools
+
+### RTK Runner
+
+Executes any shell command via RTK with automatic token savings tracking.
+
+**Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `command` | `string` | ✅ | — | Shell command to execute |
+| `workingDirectory` | `string` | ❌ | `process.cwd()` | Execution directory |
+| `ultraCompact` | `boolean` | ❌ | `false` | Maximum compression (`-u` flag) |
+| `rawFallback` | `boolean` | ❌ | `true` | Use raw output if RTK unavailable |
+
+**Returns:** `success`, `stdout`, `stderr`, `exitCode`, `tokensSaved`, `percentSaved`, `totalTokensSaved`, `totalRuns`
+
+### RTK Stats
+
+Retrieves token savings statistics.
+
+**Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `period` | `select` | ❌ | `all` | `all`, `today`, `week`, `month` |
+
+**Returns:** `success`, `totalRuns`, `rtkRuns`, `fallbackRuns`, `totalTokensSaved`, `commands`, `history`
+
+### RTK Dashboard
+
+Renders a visual HTML widget with token savings charts.
+
+**Parameters:** None
+
+**Returns:** `html` (self-contained widget with stat cards, adoption ring, sparkline, bar chart)
 
 ---
 
 ## Import the Workflow
 
-Create a workflow by importing this JSON:
+Copy and paste this JSON into AGNT Workflow Import:
 
 ```json
 {
@@ -117,63 +188,6 @@ Create a workflow by importing this JSON:
   ]
 }
 ```
-
-1. Go to **Workflows**
-2. Click **Import**
-3. Paste the JSON above
-4. Click **Import**
-5. Click **Run**
-
----
-
-## What This Plugin Does
-
-Runs shell commands through [RTK](https://github.com/rtk-ai/rtk) to compress output by **60-90%** before LLM ingestion.
-
-| Command | Raw Tokens | RTK Output | Savings |
-|---------|-----------|------------|---------|
-| `git status` | ~3,000 | ~600 | **-80%** |
-| `cargo test` | ~25,000 | ~2,500 | **-90%** |
-| `docker ps` | ~900 | ~180 | **-80%** |
-
----
-
-## Tools
-
-### RTK Runner
-
-Executes shell commands via RTK with automatic token savings tracking.
-
-**Parameters:**
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `command` | `string` | ✅ | — | Shell command passed to RTK |
-| `workingDirectory` | `string` | ❌ | `process.cwd()` | Execution directory |
-| `ultraCompact` | `boolean` | ❌ | `false` | Adds `-u` flag for max compression |
-| `rawFallback` | `boolean` | ❌ | `true` | Falls back to raw output if RTK unavailable |
-
-**Returns:** `success`, `stdout`, `stderr`, `exitCode`, `tokensSaved`, `percentSaved`, `totalTokensSaved`, `totalRuns`
-
-### RTK Stats
-
-Retrieves token savings statistics.
-
-**Parameters:**
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `period` | `select` | ❌ | `all` | `all`, `today`, `week`, `month` |
-
-**Returns:** `success`, `totalRuns`, `rtkRuns`, `fallbackRuns`, `totalTokensSaved`, `commands`, `history`
-
-### RTK Dashboard
-
-Renders a visual HTML widget with token savings charts.
-
-**Parameters:** None
-
-**Returns:** `html` (self-contained widget)
 
 ---
 
