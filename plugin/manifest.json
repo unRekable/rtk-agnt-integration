@@ -1,6 +1,6 @@
 {
   "name": "rtk-agnt-integration",
-  "version": "4.0.0",
+  "version": "3.0.0",
   "description": "Run shell commands through RTK to save 60-90% tokens before LLM ingestion.",
   "author": "AGNT Community",
   "icon": "terminal",
@@ -62,7 +62,7 @@
       "type": "rtk-stats",
       "entryPoint": "./rtk-stats.js",
       "schema": {
-        "title": "RTK Stats",
+        "title": "RTK; Stats",
         "category": "utility",
         "type": "rtk-stats",
         "icon": "chart-bar",
