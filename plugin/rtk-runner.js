@@ -1,9 +1,5 @@
 import { executeRtk } from '../src/index.js';
 
-/**
- * AGNT Plugin Tool: RTK Runner
- * Executes shell commands through RTK with automatic token savings tracking.
- */
 class RtkRunner {
   constructor() {
     this.name = 'rtk-runner';
