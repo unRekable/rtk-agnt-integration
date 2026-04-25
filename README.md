@@ -71,15 +71,12 @@ Verify: `rtk --version`
 ## Installation
 
 1. Download `rtk-agnt-integration.agnt` from [Releases](https://github.com/unRekable/rtk-agnt-integration/releases/latest)
-2. In AGNT, go to **Marketplace → Install from file**
-3. Select the downloaded `.agnt` file
-4. The plugin installs and activates automatically
+2. In AGNT: **Marketplace → Install from file** → select the `.agnt` file
+3. Plugin hot-reloads automatically
 
 ---
 
 ## Supported RTK Commands
-
-This plugin supports all commands that RTK can compress. Here is the complete list:
 
 | Category | Commands |
 |----------|---------|
@@ -112,16 +109,16 @@ This plugin supports all commands that RTK can compress. Here is the complete li
 
 ### RTK Runner
 
-Executes any shell command via RTK with automatic token savings tracking.
+Executes shell commands via RTK with automatic token savings tracking.
 
 **Parameters:**
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `command` | `string` | ✅ | — | Shell command to execute |
+| `command` | `string` | ✅ | — | Shell command passed to RTK |
 | `workingDirectory` | `string` | ❌ | `process.cwd()` | Execution directory |
-| `ultraCompact` | `boolean` | ❌ | `false` | Maximum compression (`-u` flag) |
-| `rawFallback` | `boolean` | ❌ | `true` | Use raw output if RTK unavailable |
+| `ultraCompact` | `boolean` | ❌ | `false` | Adds `-u` flag for max compression |
+| `rawFallback` | `boolean` | ❌ | `true` | Falls back to raw output if RTK unavailable |
 
 **Returns:** `success`, `stdout`, `stderr`, `exitCode`, `tokensSaved`, `percentSaved`, `totalTokensSaved`, `totalRuns`
 
@@ -139,7 +136,7 @@ Retrieves token savings statistics.
 
 ### RTK Dashboard
 
-Renders a visual HTML widget with token savings charts.
+Renders a visual HTML widget with token savings charts. Automatically adapts to AGNT's dark/light theme via CSS variables.
 
 **Parameters:** None
 
@@ -153,8 +150,8 @@ Copy and paste this JSON into AGNT Workflow Import:
 
 ```json
 {
-  "name": "RTK Token Optimizer",
-  "description": "Execute shell commands via RTK with token savings tracking",
+  "name": "RTK Dashboard",
+  "description": "RTK token optimization dashboard",
   "nodes": [
     {
       "id": "trigger-1",
