@@ -1,9 +1,5 @@
 import { loadStats } from '../src/index.js';
 
-/**
- * AGNT Plugin Tool: RTK Dashboard
- * Interactive token savings dashboard — theme-aware, responsive, self-contained HTML.
- */
 class RtkDashboard {
   constructor() {
     this.name = 'rtk-dashboard';
@@ -13,23 +9,19 @@ class RtkDashboard {
     try {
       const stats = loadStats();
 
-      // Calculate derived metrics
       const totalRuns = stats.totalRuns || 0;
       const rtkRuns = stats.rtkRuns || 0;
       const fallbackRuns = stats.fallbackRuns || 0;
       const totalTokensSaved = stats.totalTokensSaved || 0;
       const rtkRate = totalRuns > 0 ? Math.round((rtkRuns / totalRuns) * 100) : 0;
 
-      // Command breakdown for chart
       const commandEntries = Object.entries(stats.commands || {})
         .sort((a, b) => b[1].tokensSaved - a[1].tokensSaved)
         .slice(0, 6);
 
       const commandLabels = commandEntries.map(([cmd]) => cmd);
       const commandSavings = commandEntries.map(([, data]) => data.tokensSaved);
-      const commandCounts = commandEntries.map(([, data]) => data.count);
 
-      // History sparkline (last 20 runs)
       const recentHistory = (stats.history || []).slice(-20);
       const sparkData = recentHistory.map(h => h.tokensSaved || 0);
 
@@ -41,9 +33,7 @@ class RtkDashboard {
         rtkRate,
         commandLabels,
         commandSavings,
-        commandCounts,
-        sparkData,
-        recentHistory
+        sparkData
       });
 
       return { success: true, html };
@@ -60,7 +50,11 @@ class RtkDashboard {
     } = data;
 
     const sparkPoints = sparkData.length > 0
-      ? sparkData.map((v, i) => `${i * (300 / Math.max(sparkData.length - 1, 1))},${60 - (v / Math.max(...sparkData, 1)) * 50}`).join(' ')
+      ? sparkData.map((v, i) => {
+          const x = i * (300 / Math.max(sparkData.length - 1, 1));
+          const y = 60 - (v / Math.max(...sparkData, 1)) * 50;
+          return `${x},${y}`;
+        }).join(' ')
       : '';
 
     const barMax = Math.max(...commandSavings, 1);
@@ -174,8 +168,8 @@ body {
   <div class="header">
     <div class="header-icon">🦀</div>
     <div>
-      <h1>RTK Token Optimizer</h1>
-      <p>Live token savings dashboard — updates automatically</p>
+      <h1>RTK Dashboard</h1>
+      <p>Token savings analytics</p>
     </div>
   </div>
 
@@ -201,12 +195,12 @@ body {
   </div>
 
   <div class="card">
-    <div class="chart-title">📊 RTK Adoption Rate</div>
+    <div class="chart-title">RTK Adoption Rate</div>
     <div class="rate-ring"><span>${rtkRate}%</span></div>
   </div>
 
   <div class="card">
-    <div class="chart-title">📈 Token Savings Trend (Last 20 Runs)</div>
+    <div class="chart-title">Token Savings Trend (Last 20 Runs)</div>
     <svg class="sparkline" viewBox="0 0 300 60" preserveAspectRatio="none">
       <polygon class="area" points="0,60 ${sparkPoints} 300,60" />
       <polyline points="${sparkPoints}" />
@@ -214,11 +208,11 @@ body {
   </div>
 
   <div class="card">
-    <div class="chart-title">🏆 Top Commands by Tokens Saved</div>
+    <div class="chart-title">Top Commands by Tokens Saved</div>
     <div class="bar-chart">${bars}</div>
   </div>
 
-  <div class="footer">RTK-AGNT Integration v3.0.0 • Data persisted locally</div>
+  <div class="footer">RTK-AGNT Integration v3.0.0</div>
 </div>
 </body>
 </html>`;
