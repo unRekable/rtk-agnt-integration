@@ -20,7 +20,7 @@
           "command": {
             "type": "string",
             "inputType": "text",
-            "description": "Shell command to run (e.g. git status, cargo test, docker ps)",
+            "description": "Shell command to run",
             "required": true,
             "placeholder": "git status"
           },
@@ -44,17 +44,39 @@
           }
         },
         "outputs": {
-          "success": { "type": "boolean" },
-          "rtkInstalled": { "type": "boolean" },
-          "exitCode": { "type": "number" },
-          "stdout": { "type": "string" },
-          "stderr": { "type": "string" },
-          "tokensSaved": { "type": "number" },
-          "percentSaved": { "type": "number" },
-          "totalTokensSaved": { "type": "number" },
-          "totalRuns": { "type": "number" },
-          "note": { "type": "string" },
-          "error": { "type": "string" }
+          "success": {
+            "type": "boolean"
+          },
+          "rtkInstalled": {
+            "type": "boolean"
+          },
+          "exitCode": {
+            "type": "number"
+          },
+          "stdout": {
+            "type": "string"
+          },
+          "stderr": {
+            "type": "string"
+          },
+          "tokensSaved": {
+            "type": "number"
+          },
+          "percentSaved": {
+            "type": "number"
+          },
+          "totalTokensSaved": {
+            "type": "number"
+          },
+          "totalRuns": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
         }
       }
     },
@@ -62,7 +84,7 @@
       "type": "rtk-stats",
       "entryPoint": "./rtk-stats.js",
       "schema": {
-        "title": "RTK; Stats",
+        "title": "RTK Stats",
         "category": "utility",
         "type": "rtk-stats",
         "icon": "chart-bar",
@@ -74,21 +96,47 @@
             "description": "Time period",
             "default": "all",
             "options": [
-              { "value": "all", "label": "All time" },
-              { "value": "today", "label": "Today" },
-              { "value": "week", "label": "Last 7 days" },
-              { "value": "month", "label": "Last 30 days" }
+              {
+                "value": "all",
+                "label": "All time"
+              },
+              {
+                "value": "today",
+                "label": "Today"
+              },
+              {
+                "value": "week",
+                "label": "Last 7 days"
+              },
+              {
+                "value": "month",
+                "label": "Last 30 days"
+              }
             ]
           }
         },
         "outputs": {
-          "success": { "type": "boolean" },
-          "totalRuns": { "type": "number" },
-          "rtkRuns": { "type": "number" },
-          "fallbackRuns": { "type": "number" },
-          "totalTokensSaved": { "type": "number" },
-          "commands": { "type": "object" },
-          "history": { "type": "array" }
+          "success": {
+            "type": "boolean"
+          },
+          "totalRuns": {
+            "type": "number"
+          },
+          "rtkRuns": {
+            "type": "number"
+          },
+          "fallbackRuns": {
+            "type": "number"
+          },
+          "totalTokensSaved": {
+            "type": "number"
+          },
+          "commands": {
+            "type": "object"
+          },
+          "history": {
+            "type": "array"
+          }
         }
       }
     },
@@ -103,7 +151,9 @@
         "description": "Visual dashboard with charts showing token savings. Auto-detects AGNT theme.",
         "parameters": {},
         "outputs": {
-          "html": { "type": "string" }
+          "html": {
+            "type": "string"
+          }
         }
       }
     }
