@@ -6,8 +6,6 @@
   "main": "src/index.js",
   "scripts": {
     "test": "node scripts/test.mjs",
-    "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "eslint src/ plugin/ __tests__/",
     "build:plugin": "node bin/build-plugin.js",
     "install:agnt": "node bin/install-to-agnt.js"
