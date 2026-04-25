@@ -1,9 +1,5 @@
 import { loadStats } from '../src/index.js';
 
-/**
- * AGNT Plugin Tool: RTK Stats
- * Retrieve token savings statistics and command history.
- */
 class RtkStats {
   constructor() {
     this.name = 'rtk-stats';
@@ -21,10 +17,10 @@ class RtkStats {
         const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         history = history.filter(h => new Date(h.timestamp) >= start);
       } else if (period === 'week') {
-        const start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const start = new Date(now.getTime() - 7 * 86400000);
         history = history.filter(h => new Date(h.timestamp) >= start);
       } else if (period === 'month') {
-        const start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const start = new Date(now.getTime() - 30 * 86400000);
         history = history.filter(h => new Date(h.timestamp) >= start);
       }
 
