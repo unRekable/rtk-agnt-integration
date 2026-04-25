@@ -1,26 +1,12 @@
-/**
- * RTK-AGNT Integration — Core Library
- * Token tracking, stats persistence, and shared utilities.
- */
-
 import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-/**
- * Get the stats file path (in AGNT user data or local)
- */
 function getStatsPath() {
   const userData = process.env.USER_DATA_PATH || path.join(process.env.HOME || '/tmp', '.rtk-agnt-stats');
   return path.join(userData, 'stats.json');
 }
 
-/**
- * Ensure stats directory exists
- */
 function ensureStatsDir() {
   const statsPath = getStatsPath();
   const dir = path.dirname(statsPath);
@@ -29,10 +15,7 @@ function ensureStatsDir() {
   }
 }
 
-/**
- * Load stats from disk
- */
-function loadStats() {
+export function loadStats() {
   ensureStatsDir();
   const statsPath = getStatsPath();
   if (fs.existsSync(statsPath)) {
@@ -45,9 +28,6 @@ function loadStats() {
   return createDefaultStats();
 }
 
-/**
- * Create default stats structure
- */
 function createDefaultStats() {
   return {
     version: 1,
@@ -62,26 +42,17 @@ function createDefaultStats() {
   };
 }
 
-/**
- * Save stats to disk
- */
-function saveStats(stats) {
+export function saveStats(stats) {
   ensureStatsDir();
   stats.updatedAt = new Date().toISOString();
   fs.writeFileSync(getStatsPath(), JSON.stringify(stats, null, 2));
 }
 
-/**
- * Estimate tokens in a string (rough heuristic: ~4 chars per token)
- */
 function estimateTokens(text) {
   if (!text) return 0;
   return Math.ceil(text.length / 4);
 }
 
-/**
- * Calculate token savings between raw and compressed output
- */
 function calculateSavings(rawOutput, compressedOutput) {
   const rawTokens = estimateTokens(rawOutput);
   const compressedTokens = estimateTokens(compressedOutput);
@@ -90,10 +61,7 @@ function calculateSavings(rawOutput, compressedOutput) {
   return { rawTokens, compressedTokens, saved, percent };
 }
 
-/**
- * Record a run in stats
- */
-function recordRun(command, rtkInstalled, rawOutput, compressedOutput) {
+export function recordRun(command, rtkInstalled, rawOutput, compressedOutput) {
   const stats = loadStats();
   stats.totalRuns++;
 
@@ -106,7 +74,6 @@ function recordRun(command, rtkInstalled, rawOutput, compressedOutput) {
   const savings = calculateSavings(rawOutput, compressedOutput);
   stats.totalTokensSaved += savings.saved;
 
-  // Per-command stats
   const cmdKey = command.split(' ')[0];
   if (!stats.commands[cmdKey]) {
     stats.commands[cmdKey] = { count: 0, tokensSaved: 0 };
@@ -114,7 +81,6 @@ function recordRun(command, rtkInstalled, rawOutput, compressedOutput) {
   stats.commands[cmdKey].count++;
   stats.commands[cmdKey].tokensSaved += savings.saved;
 
-  // History (keep last 100)
   stats.history.push({
     timestamp: new Date().toISOString(),
     command,
@@ -130,10 +96,7 @@ function recordRun(command, rtkInstalled, rawOutput, compressedOutput) {
   return { savings, stats };
 }
 
-/**
- * Execute a command via RTK with full tracking
- */
-function executeRtk(params) {
+export function executeRtk(params) {
   return new Promise((resolve) => {
     const { command, workingDirectory, ultraCompact, rawFallback } = params || {};
 
@@ -150,7 +113,6 @@ function executeRtk(params) {
     const rtkCmd = `rtk ${flags}${command}`;
 
     exec(rtkCmd, { cwd, shell: '/bin/bash', env: process.env }, (error, stdout, stderr) => {
-      // RTK not found — fallback
       if (error && error.code === 127 && rawFallback !== false) {
         exec(command, { cwd, shell: '/bin/bash', env: process.env }, (err2, stdout2, stderr2) => {
           const raw = stdout2 ? stdout2.trim() : '';
@@ -173,8 +135,7 @@ function executeRtk(params) {
       }
 
       const compressed = stdout ? stdout.trim() : '';
-      const rawForEstimate = compressed; // We don't have raw, estimate savings based on typical RTK compression
-      const record = recordRun(command, !(error && error.code === 127), rawForEstimate, compressed);
+      const record = recordRun(command, !(error && error.code === 127), compressed, compressed);
 
       resolve({
         success: !error || error.code === 0,
@@ -192,13 +153,3 @@ function executeRtk(params) {
     });
   });
 }
-
-export {
-  executeRtk,
-  loadStats,
-  saveStats,
-  recordRun,
-  estimateTokens,
-  calculateSavings,
-  getStatsPath
-};
