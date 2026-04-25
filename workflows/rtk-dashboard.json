@@ -1,0 +1,48 @@
+{
+  "name": "RTK Dashboard",
+  "description": "RTK token optimization dashboard",
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "type": "trigger",
+      "config": {
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "runner-1",
+      "type": "rtk-runner",
+      "config": {
+        "command": "git status",
+        "ultraCompact": false,
+        "rawFallback": true
+      }
+    },
+    {
+      "id": "stats-1",
+      "type": "rtk-stats",
+      "config": {
+        "period": "all"
+      }
+    },
+    {
+      "id": "dashboard-1",
+      "type": "rtk-dashboard",
+      "config": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger-1",
+      "target": "runner-1"
+    },
+    {
+      "source": "runner-1",
+      "target": "stats-1"
+    },
+    {
+      "source": "stats-1",
+      "target": "dashboard-1"
+    }
+  ]
+}
