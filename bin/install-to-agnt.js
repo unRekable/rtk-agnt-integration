@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-/**
- * Install RTK plugin into local AGNT instance
- * Usage: node bin/install-to-agnt.js
- */
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
