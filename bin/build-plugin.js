@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-/**
- * Build AGNT plugin package (.agnt file)
- * Usage: node bin/build-plugin.js
- */
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
